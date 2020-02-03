@@ -1,0 +1,43 @@
+{
+  "name": "filterfind-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "db:migrate": "node ./db/migrate build",
+    "db:seed": "node ./db/migrate seed_dev",
+    "test": "tap -w test/**/*.test.js --reporter=specy",
+    "start": "fastify start -l info app.js",
+    "dev": "fastify start -w -l info -P app.js"
+  },
+  "keywords": [],
+  "author": "Adam Davis <adam@admataz.com>",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "dotenv-expand": "^5.1.0",
+    "fastify": "^2.11.0",
+    "fastify-autoload": "^1.0.0",
+    "fastify-cli": "^1.3.0",
+    "fastify-cors": "^3.0.1",
+    "fastify-plugin": "^1.5.0",
+    "fastify-postgres": "^2.0.0",
+    "fastify-sensible": "^2.1.1",
+    "fluent-schema": "^0.10.0",
+    "pg": "^7.18.1",
+    "sql-template-strings": "^2.2.2"
+  },
+  "devDependencies": {
+    "chance": "^1.1.4",
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "faker": "^4.1.0",
+    "postgrator": "^3.11.0",
+    "request": "^2.88.0",
+    "tap": "^14.10.5"
+  }
+}

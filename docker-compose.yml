@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:alpine
+    restart: "no"
+    ports:
+      - 5432:5432
+    volumes:
+      - ffdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ff-123
+      POSTGRES_USER: ff-user
+      POSTGRES_DB: filterfind-api
+      PGDATA: /var/lib/postgresql/data/pgdata
+
+volumes:
+  ffdata:
+   driver: local
