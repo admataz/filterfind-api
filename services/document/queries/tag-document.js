@@ -1,9 +1,9 @@
 const SQL = require('sql-template-strings')
 
-function addTag ({ tagId, documentId }) {
+function addRelationship ({ baseDocumentId, relatedDocumentId }) {
   return SQL`
-      INSERT INTO tag_document(tag_id, document_id) VALUES (${tagId}, ${documentId})
+      INSERT INTO document_relationship(document_base, document_rel) VALUES (${baseDocumentId}, ${relatedDocumentId})
     `
 }
 
-module.exports = addTag
+module.exports = addRelationship

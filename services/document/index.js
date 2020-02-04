@@ -2,6 +2,7 @@ const S = require('fluent-schema')
 const queries = require('./queries')
 
 const bodySchema = S.object()
+  .prop('doctype', S.string()).required()
   .prop('title', S.string()).required()
   .prop('excerpt', S.string()).default('')
   .prop('body', S.string()).default('')
@@ -37,11 +38,12 @@ module.exports = function (fastify, opts, next) {
       const client = await fastify.pg.connect()
       let docs = { rows: [] }
       const {
-        filter,
+        filter = [],
         find,
         pg,
         limit,
-        match
+        match,
+        type
       } = request.query
 
       const filterArray = Array.isArray(filter) ? filter : filter.split(',')
@@ -50,7 +52,8 @@ module.exports = function (fastify, opts, next) {
         find,
         pg,
         limit,
-        match
+        match,
+        type
       }))
       client.release()
 

@@ -1,18 +1,16 @@
 const SQL = require('sql-template-strings')
 
-function getDocumentsByTagIds ({ filter = [] }) {
-  const q = SQL`
-  SELECT d.title, t.label 
+function getDocumentsByRelatedIds ({ filter = [] }) {
+  return SQL`
+  SELECT d.*
   FROM document d
-  LEFT  JOIN "tag_document" td ON d.id=td.document_id
-  LEFT JOIN "tag" t ON td.tag_id = t.id
-  WHERE td.tag_id = ANY (${filter}) `
-
-  return q
+  LEFT  JOIN "document_relationship" rel ON d.id=rel.document_base
+  LEFT JOIN "document" d2 ON rel.document_rel = d2.id
+  WHERE rel.document_rel = ANY (${filter}) `
 }
 
-function filterByTags ({ filter = [] }) {
-  const query = SQL`SELECT DISTINCT d.* FROM "tag" t1`
+function filterByRelationships ({ filter = [] }) {
+  const query = SQL`SELECT DISTINCT d.* FROM "document" dr1`
   let crossJoins = ''
   let innerJoins = ''
 
@@ -20,27 +18,27 @@ function filterByTags ({ filter = [] }) {
 
   while (tagCount <= filter.length) {
     crossJoins = `${crossJoins}
-    CROSS JOIN "tag" t${tagCount}
+    CROSS JOIN "document" dr${tagCount}
     `
 
     innerJoins = `${innerJoins}
-    JOIN "tag_document" t_d${tagCount}
-    ON t_d${tagCount - 1}.document_id = t_d${tagCount}.document_id
-    AND t_d${tagCount}.tag_id = t${tagCount}.id
+    JOIN "document_relationship" rel${tagCount}
+    ON rel${tagCount - 1}.document_base = rel${tagCount}.document_base
+    AND rel${tagCount}.document_rel = dr${tagCount}.id
     `
     tagCount += 1
   }
 
   query.append(`${crossJoins}
-  JOIN "tag_document" t_d1
-  ON t1.id = t_d1.tag_id
+  JOIN "document_relationship" rel1
+  ON dr1.id = rel1.document_rel
   JOIN "document" d
-  ON t_d1.document_id = d.id
+  ON rel1.document_base = d.id
   ${innerJoins}`)
 
   const tagswhere = filter.reduce((prev, curr, i) => {
     return prev
-      .append(`AND t${i + 1}.id`)
+      .append(`AND dr${i + 1}.id`)
       .append(SQL`=${curr}`)
   }
   , SQL``)
@@ -49,18 +47,18 @@ function filterByTags ({ filter = [] }) {
   return query
 }
 
-function listDocuments ({ filter = [], find = '', pg = 0, limit = 30, match = 'all' }) {
+function listDocuments ({ filter = [], find = '', pg = 0, limit = 30, match = 'all', type = null }) {
   let query = SQL``
 
   if (filter.length) {
     if (match === 'any') {
-      query = getDocumentsByTagIds({ filter })
+      query = getDocumentsByRelatedIds({ filter })
     } else {
-      query = filterByTags({ filter })
+      query = filterByRelationships({ filter })
     }
   } else {
     query = SQL`
-    SELECT * FROM document WHERE true
+    SELECT * FROM "document" d WHERE true
     `
   }
   if (find) {
@@ -71,6 +69,13 @@ function listDocuments ({ filter = [], find = '', pg = 0, limit = 30, match = 'a
       OR body LIKE ${findlike})
       `)
   }
+
+  if (type) {
+    query.append(SQL`
+    AND d.doctype = ${type}
+    `)
+  }
+
   query.append(SQL`
   LIMIT ${limit} OFFSET ${pg}
   `)

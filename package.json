@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "db:migrate": "node ./db/migrate build",
-    "db:seed": "node ./db/migrate seed_dev",
+    "db:seed": "node ./bin/seed-mock-data",
     "test": "tap -w test/**/*.test.js --reporter=specy",
     "start": "fastify start -l info app.js",
     "dev": "fastify start -w -l info -P app.js"
