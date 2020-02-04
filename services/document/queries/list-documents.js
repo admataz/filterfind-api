@@ -1,21 +1,14 @@
 const SQL = require('sql-template-strings')
 
 function getDocumentsByTagIds ({ filter = [] }) {
-  console.log(filter)
-
-  // const inList = filter.reduce((prev, curr) => prev.append(SQL`${curr}`), SQL``)
-
-
-  const q = `
+  const q = SQL`
   SELECT d.title, t.label 
   FROM document d
   LEFT  JOIN "tag_document" td ON d.id=td.document_id
   LEFT JOIN "tag" t ON td.tag_id = t.id
-  WHERE td.tag_id IN (${inList})
-  `
+  WHERE td.tag_id = ANY (${filter}) `
 
-  console.log(q.text)
-  console.log(q.values)
+  return q
 }
 
 function filterByTags ({ filter = [] }) {

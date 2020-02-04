@@ -44,7 +44,7 @@ module.exports = function (fastify, opts, next) {
         match
       } = request.query
 
-      const filterArray = Array.isArray(filter) ? filter : [filter]
+      const filterArray = Array.isArray(filter) ? filter : filter.split(',')
       docs = await client.query(queries.list({
         filter: filterArray,
         find,
