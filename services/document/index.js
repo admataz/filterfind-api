@@ -11,6 +11,17 @@ const bodySchema = S.object()
 
 module.exports = function (fastify, opts, next) {
   fastify.route({
+    url: '/document-relationships',
+    method: 'GET',
+    handler: async (request) => {
+      const client = await fastify.pg.connect()
+      const relationships = await client.query(queries.relationships())
+      client.release()
+      return relationships.rows
+    }
+  })
+
+  fastify.route({
     url: '/document',
     method: 'POST',
     schema: {
