@@ -2,13 +2,14 @@ const S = require('fluent-schema')
 const queries = require('./queries')
 
 const bodySchema = S.object()
-  .prop('doctype', S.string()).required()
+  .prop('docshema', S.string()).required()
   .prop('title', S.string()).required()
   .prop('excerpt', S.string()).default('')
   .prop('body', S.string()).default('')
   .prop('metadata', S.anyOf([S, S.null()])).default(null)
   .prop('content', S.anyOf([S, S.null()])).default(null)
-
+  .prop('related', S.string()).default('')
+  
 module.exports = function (fastify, opts, next) {
   fastify.route({
     url: '/document-relationships',

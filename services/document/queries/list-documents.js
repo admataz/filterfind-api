@@ -72,7 +72,7 @@ function listDocuments ({ filter = [], find = '', pg = 0, limit = 30, match = 'a
 
   if (type) {
     query.append(SQL`
-    AND d.doctype = ${type}
+    AND d.docschema = ${type}
     `)
   }
 

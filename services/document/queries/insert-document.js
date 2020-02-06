@@ -2,7 +2,7 @@ const SQL = require('sql-template-strings')
 
 function create (payload) {
   const {
-    doctype,
+    docschema,
     title,
     excerpt,
     body,
@@ -12,7 +12,7 @@ function create (payload) {
 
   return SQL`
         INSERT INTO document(
-            doctype,
+            docschema,
             title, 
             excerpt,
             body,
@@ -20,7 +20,7 @@ function create (payload) {
             content
         )
         VALUES (
-            ${doctype}, 
+            ${docschema}, 
             ${title}, 
             ${excerpt},
             ${body},

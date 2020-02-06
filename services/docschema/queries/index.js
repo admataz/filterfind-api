@@ -3,17 +3,20 @@ const SQL = require('sql-template-strings')
 function create (payload) {
   const {
     label,
-    description
+    description,
+    jsonschema = null
   } = payload
 
   return SQL`
-        INSERT INTO tag(
+        INSERT INTO docschema(
             label,
-            description
+            description,
+            jsonschema
         )
         VALUES (
             ${label},
-            ${description}
+            ${description},
+            ${jsonschema}
         )
         RETURNING id
     `
