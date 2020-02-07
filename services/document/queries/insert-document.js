@@ -27,7 +27,7 @@ function create (payload) {
             ${metadata},
             ${content}
         )
-        RETURNING id
+        RETURNING *
     `
 }
 

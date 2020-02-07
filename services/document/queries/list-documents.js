@@ -1,16 +1,29 @@
 const SQL = require('sql-template-strings')
 
-function getDocumentsByRelatedIds ({ filter = [] }) {
-  return SQL`
-  SELECT d.*
-  FROM document d
-  LEFT  JOIN "document_relationship" rel ON d.id=rel.document_base
-  LEFT JOIN "document" d2 ON rel.document_rel = d2.id
-  WHERE rel.document_rel = ANY (${filter}) `
+function selectCols (cols) {
+  const c = cols.reduce((prev, curr, i) => {
+    return i === 0 ? prev.append(` ${curr} `) : prev.append(`, ${curr}`)
+  }, SQL``)
+  return c
 }
 
-function filterByRelationships ({ filter = [] }) {
-  const query = SQL`SELECT DISTINCT d.* FROM "document" dr1`
+function getDocumentsByRelatedIds ({ filter = [], cols }) {
+  const query = SQL`SELECT `
+  query.append(selectCols(cols))
+
+  query.append(SQL`
+  FROM document d
+  JOIN "document_relationship" rel ON d.id=rel.document_base
+  JOIN "document" d2 ON rel.document_rel = d2.id
+  WHERE rel.document_rel = ANY (${filter}) `)
+
+  return query
+}
+
+function filterByRelationships ({ filter = [], cols }) {
+  const query = SQL`SELECT DISTINCT `
+  query.append(selectCols(cols))
+  query.append('FROM "document" dr1')
   let crossJoins = ''
   let innerJoins = ''
 
@@ -47,20 +60,43 @@ function filterByRelationships ({ filter = [] }) {
   return query
 }
 
-function listDocuments ({ filter = [], find = '', pg = 0, limit = 30, match = 'all', type = null }) {
+function listDocuments ({
+  filter = [],
+  find = '',
+  pg = 0,
+  limit = 30,
+  match = 'all',
+  type = null,
+  cols = [],
+  only = [],
+  orderby = 'created_at',
+  dir = 'asc'
+}) {
   let query = SQL``
 
   if (filter.length) {
     if (match === 'any') {
-      query = getDocumentsByRelatedIds({ filter })
+      query = getDocumentsByRelatedIds({ filter, cols })
     } else {
-      query = filterByRelationships({ filter })
+      query = filterByRelationships({ filter, cols })
     }
   } else {
-    query = SQL`
-    SELECT * FROM "document" d WHERE true
+    query = SQL`SELECT
     `
+    query.append(selectCols(cols))
+
+    query.append(`
+    FROM "document" d
+    WHERE true
+    `)
   }
+
+  if (only.length) {
+    query.append(SQL`
+    AND id = ANY(${only})
+    `)
+  }
+
   if (find) {
     const findlike = `%${find}%`
     query.append(SQL`
@@ -75,10 +111,14 @@ function listDocuments ({ filter = [], find = '', pg = 0, limit = 30, match = 'a
     AND d.docschema = ${type}
     `)
   }
+  query.append(`
+  ORDER BY "${orderby}" ${dir}
+  `)
 
   query.append(SQL`
   LIMIT ${limit} OFFSET ${pg}
   `)
+
   return query
 }
 
