@@ -1,5 +1,5 @@
-
-// const AutoLo ad = require('fastify-autoload')
+const { ApolloServer } = require('apollo-server-fastify')
+const documentGql = require('./gql/document')
 
 const {
   PGHOST,
@@ -8,6 +8,8 @@ const {
   PGPASSWORD,
   PGDATABASE
 } = process.env
+
+const gqlServer = new ApolloServer(documentGql)
 
 module.exports = function (fastify, opts, next) {
   // Place here your custom code!
@@ -20,8 +22,11 @@ module.exports = function (fastify, opts, next) {
 
   fastify.register(require('fastify-sensible'))
   // fastify.register(require('./services/health'), { prefix: '/api' })
+
   fastify.register(require('./services/document'), {
     prefix: '/api'
   })
+
+  fastify.register(gqlServer.createHandler())
   next()
 }

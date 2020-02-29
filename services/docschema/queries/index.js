@@ -22,6 +22,13 @@ function create (payload) {
     `
 }
 
+function listSchema () {
+  return SQL`
+    SELECT * FROM docschema
+  `
+}
+
 module.exports = {
-  create
+  create,
+  list: listSchema
 }

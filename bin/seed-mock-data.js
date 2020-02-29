@@ -31,13 +31,10 @@ function generateDocument (docSchemaId) {
   return docQueries.create(doc)
 }
 
-
-
-
 async function seedData () {
   const client = new Client()
   await client.connect()
-  const docCount = 3000
+  const docCount = 10000
 
   // THIS WILL CASCADE AND DELETE EVERYTHING!! 
   await client.query('TRUNCATE "public"."docschema" RESTART IDENTITY CASCADE;')

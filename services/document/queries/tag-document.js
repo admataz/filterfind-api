@@ -2,7 +2,7 @@ const SQL = require('sql-template-strings')
 
 function addRelationship ({ baseDocumentId, relatedDocumentId }) {
   return SQL`
-      INSERT INTO document_relationship(document_base, document_rel) VALUES (${baseDocumentId}, ${relatedDocumentId})
+      UPDATE document SET related = array_append(related, ${relatedDocumentId})  WHERE id=${baseDocumentId};
     `
 }
 

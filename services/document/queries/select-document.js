@@ -13,8 +13,8 @@ function selectDocument (id, { cols } = {}) {
 
   query.append(SQL`FROM "document" WHERE id = ${id}`)
 
-  console.log(query.text)
-  console.log(query.values)
+  // console.log(query.text)
+  // console.log(query.values)
 
   return query
 }

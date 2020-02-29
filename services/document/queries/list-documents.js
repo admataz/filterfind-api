@@ -1,63 +1,28 @@
 const SQL = require('sql-template-strings')
 
-function selectCols (cols) {
+function selectCols (cols, prefix = '') {
   const c = cols.reduce((prev, curr, i) => {
-    return i === 0 ? prev.append(` ${curr} `) : prev.append(`, ${curr}`)
+    return i === 0 ? prev.append(` ${prefix}.${curr} `) : prev.append(`, ${prefix}.${curr}`)
   }, SQL``)
   return c
 }
 
 function getDocumentsByRelatedIds ({ filter = [], cols }) {
-  const query = SQL`SELECT `
-  query.append(selectCols(cols))
-
-  query.append(SQL`
-  FROM document d
-  JOIN "document_relationship" rel ON d.id=rel.document_base
-  JOIN "document" d2 ON rel.document_rel = d2.id
-  WHERE rel.document_rel = ANY (${filter}) `)
-
-  return query
+  return filter.reduce((prev, curr, i) => {
+    return i === 0
+      ? prev.append(`${curr} = ANY (d.related)`)
+      : prev.append(` OR ${curr} = ANY (d.related)`)
+  },
+  SQL``)
 }
 
 function filterByRelationships ({ filter = [], cols }) {
-  const query = SQL`SELECT DISTINCT `
-  query.append(selectCols(cols))
-  query.append('FROM "document" dr1')
-  let crossJoins = ''
-  let innerJoins = ''
-
-  let tagCount = 2
-
-  while (tagCount <= filter.length) {
-    crossJoins = `${crossJoins}
-    CROSS JOIN "document" dr${tagCount}
-    `
-
-    innerJoins = `${innerJoins}
-    JOIN "document_relationship" rel${tagCount}
-    ON rel${tagCount - 1}.document_base = rel${tagCount}.document_base
-    AND rel${tagCount}.document_rel = dr${tagCount}.id
-    `
-    tagCount += 1
-  }
-
-  query.append(`${crossJoins}
-  JOIN "document_relationship" rel1
-  ON dr1.id = rel1.document_rel
-  JOIN "document" d
-  ON rel1.document_base = d.id
-  ${innerJoins}`)
-
-  const tagswhere = filter.reduce((prev, curr, i) => {
-    return prev
-      .append(`AND dr${i + 1}.id`)
-      .append(SQL`=${curr}`)
-  }
-  , SQL``)
-
-  query.append(tagswhere)
-  return query
+  return filter.reduce((prev, curr, i) => {
+    return i === 0
+      ? prev.append(`${curr} = ANY (d.related)`)
+      : prev.append(` AND ${curr} = ANY (d.related)`)
+  },
+  SQL``)
 }
 
 function listDocuments ({
@@ -74,21 +39,29 @@ function listDocuments ({
 }) {
   let query = SQL``
 
-  if (filter.length) {
-    if (match === 'any') {
-      query = getDocumentsByRelatedIds({ filter, cols })
-    } else {
-      query = filterByRelationships({ filter, cols })
-    }
-  } else {
-    query = SQL`SELECT
-    `
-    query.append(selectCols(cols))
+  if (!cols.includes(orderby)) {
+    cols.push(orderby)
+  }
 
-    query.append(`
+  //  else {
+  query = SQL`SELECT
+    `
+  query.append(selectCols(cols, 'd'))
+
+  query.append(`
     FROM "document" d
     WHERE true
     `)
+
+  if (filter.length) {
+    query.append('AND (')
+    if (match === 'any') {
+      query.append(getDocumentsByRelatedIds({ filter, cols }))
+    } else {
+      query.append(filterByRelationships({ filter, cols }))
+    }
+    query.append(`)
+      `)
   }
 
   if (only.length) {
@@ -100,9 +73,9 @@ function listDocuments ({
   if (find) {
     const findlike = `%${find}%`
     query.append(SQL`
-      AND (excerpt LIKE ${findlike} 
-      OR title LIKE ${findlike}
-      OR body LIKE ${findlike})
+      AND (d.excerpt ILIKE ${findlike} 
+      OR d.title ILIKE ${findlike}
+      OR d.body ILIKE ${findlike})
       `)
   }
 
@@ -118,6 +91,9 @@ function listDocuments ({
   query.append(SQL`
   LIMIT ${limit} OFFSET ${pg}
   `)
+
+  // console.log(query.text)
+  // console.log(query.values)
 
   return query
 }
