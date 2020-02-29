@@ -1,6 +1,9 @@
 const { gql } = require('apollo-server-fastify')
 
 const typeDefs = gql`
+  scalar JSON
+  scalar JSONObject
+
   type DocRels {
     id: Int
     s: Int
@@ -15,7 +18,7 @@ const typeDefs = gql`
     id: Int
     label: String
     description: String
-    # jsonschema:
+    jsonschema: JSONObject
     documents:[Document]
   }
 
@@ -24,8 +27,8 @@ const typeDefs = gql`
     title: String
     excerpt: String
     body: String
-    # metadata
-    # content
+    metadata: JSONObject
+    content: JSONObject
     related: [Int]
     relatedDocs: [Document]
     id: Int

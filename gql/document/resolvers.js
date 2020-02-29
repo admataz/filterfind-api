@@ -2,7 +2,11 @@ require('dotenv-expand')(require('dotenv').config())
 const docQueries = require('../../services/document/queries')
 const schemaQueries = require('../../services/docschema/queries')
 
+const { GraphQLJSON, GraphQLJSONObject } = require('graphql-type-json')
+
 const resolvers = {
+  JSONObject: GraphQLJSONObject,
+  JSON: GraphQLJSON,
   Query: {
     async docschema (parent, args, { db }, info) {
       const { rows } = await db.query(schemaQueries.list({
@@ -53,8 +57,6 @@ const resolvers = {
     },
     async doc (parent, args, { db }, info) {
       const { rows } = await db.query(docQueries.list({
-        filter: [],
-        cols: ['*'],
         only: parent.related
       }))
       return rows[0]
