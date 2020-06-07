@@ -9,10 +9,12 @@ const resolvers = {
   JSON: GraphQLJSON,
   Query: {
     async docschema (parent, args, { db }, info) {
-      const { rows } = await db.query(schemaQueries.list({
-        filter: [],
-        cols: ['*']
-      }))
+      const { rows } = await db.query(
+        schemaQueries.list({
+          filter: [],
+          cols: ['*']
+        })
+      )
       return rows
     },
     async document (parent, args, { db }, info) {
@@ -24,45 +26,62 @@ const resolvers = {
       return relationships.rows
     }
   },
+  Mutation: {
+    async saveDocument (parent, args, { db }, info) {
+
+      console.log(args)
+
+      const savedDocument = args.document.id
+        ? await db.query(docQueries.update(args.document.id, args.document))
+        : await db.query(docQueries.create(args.document))
+      return savedDocument.rows
+    }
+  },
 
   Document: {
     async relatedDocs (parent, args, { db }, info) {
-      const { rows } = await db.query(docQueries.list({
-        filter: [],
-        cols: ['*'],
-        only: parent.related
-      }))
+      const { rows } = await db.query(
+        docQueries.list({
+          filter: [],
+          cols: ['*'],
+          only: parent.related
+        })
+      )
       return rows
     }
   },
 
   DocSchema: {
     async documents (parent, args, { db }, info) {
-      const { rows } = await db.query(docQueries.list({
-        filter: [],
-        cols: ['*'],
-        type: parent.id
-      }))
+      const { rows } = await db.query(
+        docQueries.list({
+          filter: [],
+          cols: ['*'],
+          type: parent.id
+        })
+      )
       return rows
     }
-
   },
   DocRels: {
     async schema (parent, args, { db }, info) {
-      const { rows } = await db.query(schemaQueries.list({
-        filter: [],
-        cols: ['*']
-      }))
+      const { rows } = await db.query(
+        schemaQueries.list({
+          filter: [],
+          cols: ['*']
+        })
+      )
       return rows[0]
     },
     async doc (parent, args, { db }, info) {
-      const { rows } = await db.query(docQueries.list({
-        only: parent.related
-      }))
+      const { rows } = await db.query(
+        docQueries.list({
+          only: parent.related
+        })
+      )
       return rows[0]
     }
   }
-
 }
 
 module.exports = resolvers

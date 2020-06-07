@@ -2,7 +2,7 @@ const typeDefs = require('./typeDefs')
 const resolvers = require('./resolvers')
 const { Client } = require('pg')
 
-module.exports = {
+module.exports = () => ({
   typeDefs,
   resolvers,
   context: async () => {
@@ -12,4 +12,4 @@ module.exports = {
       db: client
     }
   }
-}
+})

@@ -23,7 +23,7 @@ const typeDefs = gql`
   }
 
   type Document {
-    docschema: DocSchema
+    docschema: Int
     title: String
     excerpt: String
     body: String
@@ -31,6 +31,19 @@ const typeDefs = gql`
     content: JSONObject
     related: [Int]
     relatedDocs: [Document]
+    id: Int
+    created_at: String
+    modified_at: String
+  }
+  
+  input DocumentInput {
+    docschema: Int
+    title: String
+    excerpt: String
+    body: String
+    metadata: JSONObject
+    content: JSONObject
+    related: [Int]
     id: Int
     created_at: String
     modified_at: String
@@ -52,6 +65,10 @@ const typeDefs = gql`
       dir: String = "asc"
     ): [Document]
     docschema: [DocSchema]
+  }
+
+  type Mutation {
+    saveDocument(document: DocumentInput): [Document]
   }
 `
 

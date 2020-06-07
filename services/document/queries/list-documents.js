@@ -2,7 +2,9 @@ const SQL = require('sql-template-strings')
 
 function selectCols (cols, prefix = '') {
   const c = cols.reduce((prev, curr, i) => {
-    return i === 0 ? prev.append(` ${prefix}.${curr} `) : prev.append(`, ${prefix}.${curr}`)
+    return i === 0
+      ? prev.append(` ${prefix}.${curr} `)
+      : prev.append(`, ${prefix}.${curr}`)
   }, SQL``)
   return c
 }
@@ -12,8 +14,7 @@ function getDocumentsByRelatedIds ({ filter = [], cols }) {
     return i === 0
       ? prev.append(`${curr} = ANY (d.related)`)
       : prev.append(` OR ${curr} = ANY (d.related)`)
-  },
-  SQL``)
+  }, SQL``)
 }
 
 function filterByRelationships ({ filter = [], cols }) {
@@ -21,8 +22,7 @@ function filterByRelationships ({ filter = [], cols }) {
     return i === 0
       ? prev.append(`${curr} = ANY (d.related)`)
       : prev.append(` AND ${curr} = ANY (d.related)`)
-  },
-  SQL``)
+  }, SQL``)
 }
 
 function listDocuments ({
@@ -88,9 +88,11 @@ function listDocuments ({
   ORDER BY "${orderby}" ${dir}
   `)
 
-  query.append(SQL`
-  LIMIT ${limit} OFFSET ${pg}
-  `)
+  if (limit) {
+    query.append(SQL`
+    LIMIT ${limit} OFFSET ${pg}
+    `)
+  }
 
   // console.log(query.text)
   // console.log(query.values)

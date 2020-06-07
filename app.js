@@ -9,9 +9,9 @@ const {
   PGDATABASE
 } = process.env
 
-const gqlServer = new ApolloServer(documentGql)
 
 module.exports = function (fastify, opts, next) {
+  const gqlServer = new ApolloServer(documentGql())
   // Place here your custom code!
   fastify.register(require('fastify-cors'), {
     origin: '*'
