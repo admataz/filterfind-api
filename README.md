@@ -2,7 +2,7 @@
 
 The aim is to provide an intuitive interface to make relevant content findable with a few easy clicks. 
 
-![Filter:Find](./img/filterfind.svg)
+![Filter:Find](./filterfind.svg)
 
 This is a  simple but powerful architecture for serving collections of related content. 
 
