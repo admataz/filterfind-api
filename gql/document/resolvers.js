@@ -28,9 +28,6 @@ const resolvers = {
   },
   Mutation: {
     async saveDocument (parent, args, { db }, info) {
-
-      console.log(args)
-
       const savedDocument = args.document.id
         ? await db.query(docQueries.update(args.document.id, args.document))
         : await db.query(docQueries.create(args.document))

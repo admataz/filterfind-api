@@ -8,14 +8,8 @@ function selectDocument (id, { cols } = {}) {
   const c = colsArray.reduce((prev, curr, i) => {
     return prev.append(`,${curr} `)
   }, SQL`SELECT id `)
-
   query.append(c)
-
   query.append(SQL`FROM "document" WHERE id = ${id}`)
-
-  // console.log(query.text)
-  // console.log(query.values)
-
   return query
 }
 

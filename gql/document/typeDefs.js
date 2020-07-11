@@ -58,7 +58,7 @@ const typeDefs = gql`
       pg:Int = 0,
       limit:Int = 30,
       match: String = "all",
-      type:Int,
+      type:[Int] = [],
       cols:[String] = ["*"],
       only:[Int] = [],
       orderby:String = "created_at",

@@ -118,7 +118,7 @@ module.exports = function (fastify, opts, next) {
         .prop('pg', S.number())
         .prop('limit', S.number())
         .prop('match', S.enum(['any', 'all']))
-        .prop('type', S.number())
+        .prop('type', numberQueryList)
         .prop('only', numberQueryList)
         .prop('orderby', S.enum(validCols))
         .prop('dir', S.enum(['asc', 'desc']))
@@ -133,7 +133,7 @@ module.exports = function (fastify, opts, next) {
         pg,
         limit,
         match,
-        type,
+        type = [],
         only = [],
         orderby,
         dir
@@ -142,6 +142,7 @@ module.exports = function (fastify, opts, next) {
       const colsArray = Array.isArray(cols) ? cols : cols.split(',')
       const filterArray = Array.isArray(filter) ? filter : filter.split(',')
       const onlyArray = Array.isArray(only) ? only : only.split(',')
+      const typesArray = Array.isArray(type) ? type : type.split(',')
 
       const { rows } = await client.query(queries.list({
         filter: filterArray,
@@ -150,7 +151,7 @@ module.exports = function (fastify, opts, next) {
         pg,
         limit,
         match,
-        type,
+        type: typesArray,
         only: onlyArray,
         orderby,
         dir

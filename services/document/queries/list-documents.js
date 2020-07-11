@@ -31,7 +31,7 @@ function listDocuments ({
   pg = 0,
   limit = 30,
   match = 'all',
-  type = null,
+  type = [],
   cols = [],
   only = [],
   orderby = 'created_at',
@@ -43,7 +43,6 @@ function listDocuments ({
     cols.push(orderby)
   }
 
-  //  else {
   query = SQL`SELECT
     `
   query.append(selectCols(cols, 'd'))
@@ -79,14 +78,21 @@ function listDocuments ({
       `)
   }
 
-  if (type) {
+  if (type.length) {
     query.append(SQL`
-    AND d.docschema = ${type}
+    AND d.docschema = ANY(${type})
     `)
   }
-  query.append(`
-  ORDER BY "${orderby}" ${dir}
-  `)
+
+  if (['title', 'excerpt', 'body'].includes(orderby)) {
+    query.append(`
+    ORDER BY lower("${orderby}") ${dir}
+    `)
+  } else {
+    query.append(`
+    ORDER BY "${orderby}" ${dir}
+    `)
+  }
 
   if (limit) {
     query.append(SQL`
@@ -101,9 +107,3 @@ function listDocuments ({
 }
 
 module.exports = listDocuments
-
-// -- WHERE true
-// -- AND (excerpt LIKE '%system%' OR title LIKE '%system%' OR body LIKE '%system%')
-// -- AND metadata @> '{"bar": "Rustic payment magenta"}'
-// -- AND LOWER(metadata ->> 'bar') LIKE LOWER('%rustic%')
-// -- AND content -> 'data' -> 'prop1' <= '7403'
