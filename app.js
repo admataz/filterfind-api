@@ -1,4 +1,4 @@
-const { ApolloServer } = require('apollo-server-fastify')
+const mercurius = require('mercurius')
 const documentGql = require('./gql/document')
 
 const {
@@ -9,10 +9,7 @@ const {
   PGDATABASE
 } = process.env
 
-
 module.exports = function (fastify, opts, next) {
-  const gqlServer = new ApolloServer(documentGql())
-  // Place here your custom code!
   fastify.register(require('fastify-cors'), {
     origin: '*'
   })
@@ -27,6 +24,6 @@ module.exports = function (fastify, opts, next) {
     prefix: '/api'
   })
 
-  fastify.register(gqlServer.createHandler())
+  fastify.register(mercurius, { ...documentGql, graphiql: true })
   next()
 }

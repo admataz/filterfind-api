@@ -1,8 +1,6 @@
-const { gql } = require('apollo-server-fastify')
-
-const typeDefs = gql`
-  scalar JSON
+scalar JSON
   scalar JSONObject
+  scalar GraphQLDateTime
 
   type DocRels {
     id: Int
@@ -32,8 +30,8 @@ const typeDefs = gql`
     related: [Int]
     relatedDocs: [Document]
     id: Int
-    created_at: String
-    modified_at: String
+    created_at: GraphQLDateTime
+    modified_at: GraphQLDateTime
   }
   
   input DocumentInput {
@@ -45,10 +43,9 @@ const typeDefs = gql`
     content: JSONObject
     related: [Int]
     id: Int
-    created_at: String
-    modified_at: String
+    created_at: GraphQLDateTime
+    modified_at: GraphQLDateTime
   }
-
 
   type Query {
     documentRelations: [DocRels]
@@ -70,6 +67,3 @@ const typeDefs = gql`
   type Mutation {
     saveDocument(document: DocumentInput): [Document]
   }
-`
-
-module.exports = typeDefs

@@ -7,7 +7,8 @@ function create (payload) {
     excerpt,
     body,
     metadata,
-    content
+    content,
+    related
   } = payload
 
   return SQL`
@@ -17,15 +18,17 @@ function create (payload) {
             excerpt,
             body,
             metadata,
-            content
+            content,
+            related
         )
         VALUES (
-            ${docschema}, 
+            ${docschema},
             ${title}, 
             ${excerpt},
             ${body},
             ${metadata},
-            ${content}
+            ${content},
+            ${related}
         )
         RETURNING *
     `

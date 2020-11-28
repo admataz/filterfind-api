@@ -8,9 +8,10 @@ function update (id, payload) {
     'body',
     'metadata',
     'content',
-    'related'
+    'related',
+    'modified_at'
   ]
-  const keyvals = Object.entries(payload).filter(kv => validCols.includes(kv[0]))
+  const keyvals = Object.entries({ ...payload, modified_at: 'NOW()' }).filter(kv => validCols.includes(kv[0]))
   const query = SQL`
   UPDATE "document" 
   `

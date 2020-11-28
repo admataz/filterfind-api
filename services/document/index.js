@@ -2,7 +2,7 @@ const S = require('fluent-schema')
 const queries = require('./queries')
 
 const documentUpsertSchema = S.object()
-  .prop('docschema', S.number())
+  .prop('docschema', S.number().default(1))
   .prop('title', S.string())
   .prop('excerpt', S.string())
   .prop('body', S.string())
@@ -12,8 +12,8 @@ const documentUpsertSchema = S.object()
 
 const documentReadSchema = documentUpsertSchema
   .prop('id', S.number())
-  .prop('created_at', S.string().format('date'))
-  .prop('modified_at', S.string().format('date'))
+  .prop('created_at', S.string().format('date-time'))
+  .prop('modified_at', S.string().format('date-time'))
 
 const documentResponse = S.object().prop('data', documentReadSchema)
 const documentListResponse = S.object().prop('data', S.array().items(documentReadSchema))
@@ -38,7 +38,7 @@ module.exports = function (fastify, opts, next) {
     url: '/document',
     method: 'POST',
     schema: {
-      body: documentUpsertSchema.required(['docschema', 'title']),
+      body: documentUpsertSchema.required(['title']),
       response: {
         200: documentResponse
       }
