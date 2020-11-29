@@ -1,4 +1,4 @@
-const SQL = require('sql-template-strings')
+const SQL = require('@nearform/sql')
 
 function removeRelationship ({ baseDocumentId, relatedDocumentId }) {
   return SQL`

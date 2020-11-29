@@ -1,14 +1,10 @@
-
-const SQL = require('sql-template-strings')
-
+const SQL = require('@nearform/sql')
 function selectDocument (id, { cols } = {}) {
-  // TODO: options to select specific fields
-  const query = SQL``
+  const query = SQL`SELECT
+  `
   const colsArray = cols || []
-  const c = colsArray.reduce((prev, curr, i) => {
-    return prev.append(`,${curr} `)
-  }, SQL`SELECT id `)
-  query.append(c)
+  const allCols = colsArray.map(col => SQL`${col}`)
+  query.append(query.glue(allCols, ','), { unsafe: true })
   query.append(SQL`FROM "document" WHERE id = ${id}`)
   return query
 }

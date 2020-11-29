@@ -1,9 +1,9 @@
-const SQL = require('sql-template-strings')
+const SQL = require('@nearform/sql')
 
 function create (payload) {
   const {
     label,
-    description,
+    description = '',
     jsonschema = null
   } = payload
 

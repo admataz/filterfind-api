@@ -1,10 +1,10 @@
-const SQL = require('sql-template-strings')
+const SQL = require('@nearform/sql')
 
 function selectCols (cols, prefix = '') {
   const c = cols.reduce((prev, curr, i) => {
     return i === 0
-      ? prev.append(` ${prefix}.${curr} `)
-      : prev.append(`, ${prefix}.${curr}`)
+      ? prev.append(SQL` ${prefix}.${curr} `, { unsafe: true })
+      : prev.append(SQL`, ${prefix}.${curr}`, { unsafe: true })
   }, SQL``)
   return c
 }
@@ -12,30 +12,30 @@ function selectCols (cols, prefix = '') {
 function getDocumentsByRelatedIds ({ filter = [], cols }) {
   return filter.reduce((prev, curr, i) => {
     return i === 0
-      ? prev.append(`${curr} = ANY (d.related)`)
-      : prev.append(` OR ${curr} = ANY (d.related)`)
+      ? prev.append(SQL`${curr} = ANY (d.related)`)
+      : prev.append(SQL` OR ${curr} = ANY (d.related)`)
   }, SQL``)
 }
 
 function filterByRelationships ({ filter = [], cols }) {
   return filter.reduce((prev, curr, i) => {
     return i === 0
-      ? prev.append(`${curr} = ANY (d.related)`)
-      : prev.append(` AND ${curr} = ANY (d.related)`)
+      ? prev.append(SQL`${curr} = ANY (d.related)`)
+      : prev.append(SQL` AND ${curr} = ANY (d.related)`)
   }, SQL``)
 }
 
 function listDocuments ({
+  cols = [],
+  dir = 'asc',
   filter = [],
   find = '',
-  pg = 0,
   limit = 30,
   match = 'all',
-  type = [],
-  cols = [],
   only = [],
   orderby = 'created_at',
-  dir = 'asc'
+  pg = 0,
+  type = []
 }) {
   let query = SQL``
 
@@ -47,19 +47,19 @@ function listDocuments ({
     `
   query.append(selectCols(cols, 'd'))
 
-  query.append(`
+  query.append(SQL`
     FROM "document" d
     WHERE true
     `)
 
   if (filter.length) {
-    query.append('AND (')
+    query.append(SQL`AND (`)
     if (match === 'any') {
       query.append(getDocumentsByRelatedIds({ filter, cols }))
     } else {
       query.append(filterByRelationships({ filter, cols }))
     }
-    query.append(`)
+    query.append(SQL`)
       `)
   }
 
@@ -85,13 +85,13 @@ function listDocuments ({
   }
 
   if (['title', 'excerpt', 'body'].includes(orderby)) {
-    query.append(`
+    query.append(SQL`
     ORDER BY lower("${orderby}") ${dir}
-    `)
+    `, { unsafe: true })
   } else {
-    query.append(`
+    query.append(SQL`
     ORDER BY "${orderby}" ${dir}
-    `)
+    `, { unsafe: true })
   }
 
   if (limit) {
@@ -99,9 +99,6 @@ function listDocuments ({
     LIMIT ${limit} OFFSET ${pg}
     `)
   }
-
-  // console.log(query.text)
-  // console.log(query.values)
 
   return query
 }

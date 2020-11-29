@@ -1,4 +1,4 @@
-const SQL = require('sql-template-strings')
+const SQL = require('@nearform/sql')
 
 function create (payload) {
   const {
@@ -7,8 +7,7 @@ function create (payload) {
     excerpt,
     body,
     metadata,
-    content,
-    related
+    content
   } = payload
 
   return SQL`
@@ -18,8 +17,7 @@ function create (payload) {
             excerpt,
             body,
             metadata,
-            content,
-            related
+            content
         )
         VALUES (
             ${docschema},
@@ -27,8 +25,7 @@ function create (payload) {
             ${excerpt},
             ${body},
             ${metadata},
-            ${content},
-            ${related}
+            ${content}
         )
         RETURNING *
     `

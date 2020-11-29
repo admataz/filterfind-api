@@ -1,4 +1,4 @@
-const SQL = require('sql-template-strings')
+const SQL = require('@nearform/sql')
 
 function update (id, payload) {
   const validCols = [
@@ -14,20 +14,15 @@ function update (id, payload) {
   const keyvals = Object.entries({ ...payload, modified_at: 'NOW()' }).filter(kv => validCols.includes(kv[0]))
   const query = SQL`
   UPDATE "document" 
+  SET
   `
-  const updatevals = keyvals.reduce((prev, curr, i) => {
-    const next = prev.append(` ${curr[0]}=`)
-    next.append(SQL`${curr[1]}`)
-    next.append((i < keyvals.length - 1
-      ? `,
-    `
-      : `
-    `))
-    return next
-  }, SQL`SET`)
-
-  query.append(updatevals)
-
+  const updates = keyvals.map(kv => {
+    const setVal = SQL``
+    setVal.append(SQL`${kv[0]}=`, { unsafe: true })
+    setVal.append(SQL`${kv[1]}`)
+    return setVal
+  })
+  query.append(query.glue(updates, ' , '))
   query.append(SQL`
   WHERE id = ${id}
   RETURNING *

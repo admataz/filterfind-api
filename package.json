@@ -14,6 +14,7 @@
   "author": "Adam Davis <adam@admataz.com>",
   "license": "ISC",
   "dependencies": {
+    "@nearform/sql": "^1.5.0",
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",
     "fastify": "^3.8.0",
@@ -24,10 +25,10 @@
     "fastify-postgres": "^3.3.0",
     "fastify-sensible": "^3.0.1",
     "fluent-schema": "^1.0.5",
+    "graphql-iso-date": "^3.6.1",
     "graphql-type-json": "^0.3.2",
     "mercurius": "^6.4.0",
-    "pg": "^8.5.1",
-    "sql-template-strings": "^2.2.2"
+    "pg": "^8.5.1"
   },
   "devDependencies": {
     "chance": "^1.1.7",
