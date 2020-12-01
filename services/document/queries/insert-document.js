@@ -2,12 +2,13 @@ const SQL = require('@nearform/sql')
 
 function create (payload) {
   const {
-    docschema,
+    docschema = 1,
     title,
-    excerpt,
-    body,
-    metadata,
-    content
+    excerpt = '',
+    body = '',
+    metadata = null,
+    content = null,
+    related = null
   } = payload
 
   return SQL`
@@ -17,7 +18,8 @@ function create (payload) {
             excerpt,
             body,
             metadata,
-            content
+            content,
+            related
         )
         VALUES (
             ${docschema},
@@ -25,7 +27,8 @@ function create (payload) {
             ${excerpt},
             ${body},
             ${metadata},
-            ${content}
+            ${content},
+            ${related}
         )
         RETURNING *
     `

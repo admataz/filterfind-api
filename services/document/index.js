@@ -2,7 +2,7 @@ const S = require('fluent-schema')
 const queries = require('./queries')
 
 const documentUpsertSchema = S.object()
-  .prop('docschema', S.number().default(1))
+  .prop('docschema', S.number())
   .prop('title', S.string())
   .prop('excerpt', S.string())
   .prop('body', S.string())
@@ -38,7 +38,7 @@ module.exports = function (fastify, opts, next) {
     url: '/document',
     method: 'POST',
     schema: {
-      body: documentUpsertSchema.required(['title']),
+      body: documentUpsertSchema.required(['docschema', 'title']),
       response: {
         200: documentResponse
       }

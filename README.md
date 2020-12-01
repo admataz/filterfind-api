@@ -8,7 +8,7 @@ This is a  simple but powerful architecture for serving collections of related c
 
 ## Built with 
 
-- [fastify](https://www.fastify.io) and [node.js](https://nodejs.org/en/)
-- [Apollo server](https://www.apollographql.com/docs/apollo-server/) for graphQL
+- [fastify](https://www.fastify.io) and [node.js](https://nodejs.org/en/)   
+- [mercurius](https://mercurius.dev/#/) for graphQL
 - [Postgres](https://www.postgresql.org) for persistent storage 
 

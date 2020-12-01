@@ -26,7 +26,8 @@ function generateDocument (docSchemaId) {
         prop1: faker.random.number(),
         prop2: faker.random.number()
       }
-    }
+    },
+    related: []
   }
   return docQueries.create(doc)
 }
@@ -34,7 +35,7 @@ function generateDocument (docSchemaId) {
 async function seedData () {
   const client = new Client()
   await client.connect()
-  const docCount = 10
+  const docCount = 1000
 
   // THIS WILL CASCADE AND DELETE EVERYTHING!! 
   await client.query('TRUNCATE "public"."docschema" RESTART IDENTITY CASCADE;')
