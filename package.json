@@ -27,7 +27,7 @@
     "fluent-schema": "^1.0.5",
     "graphql-iso-date": "^3.6.1",
     "graphql-type-json": "^0.3.2",
-    "mercurius": "^6.4.0",
+    "mercurius": "^11.5.0",
     "pg": "^8.5.1"
   },
   "devDependencies": {
